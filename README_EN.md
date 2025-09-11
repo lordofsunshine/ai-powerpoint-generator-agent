@@ -73,3 +73,6 @@ Each slide gets decorations:
 If you notice, other more popular presentation generation services have limits on slides, but in my program there are no limits. Generate even 1000 slides, just how much time it will take. And without any watermarks. Absolutely free and convenient.
 I plan to continue developing this project and really hope for your support. Thank you! 📍
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=lordofsunshine/ai-powerpoint-generator-agent&type=Date)](https://www.star-history.com/#lordofsunshine/ai-powerpoint-generator-agent&Date)
