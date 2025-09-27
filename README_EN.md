@@ -3,7 +3,7 @@
 Command-line utility for creating presentations using artificial intelligence based on the g4f library.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Version](https://img.shields.io/badge/version-0.0.1-green.svg)
+![Version](https://img.shields.io/badge/version-0.0.2-green.svg)
 
 ## 🌐 Language / Язык
 
@@ -18,6 +18,11 @@ Command-line utility for creating presentations using artificial intelligence ba
 <img alt="Banner" width="600" src="https://i.postimg.cc/hPDVxSMp/image-1.png">
 <img alt="Banner" width="600" src="https://i.postimg.cc/Hn25KKWw/image-2.png">
 <img alt="Banner" width="600" src="https://i.postimg.cc/BbsHms3Z/image-3.png">
+
+## What's new?
+- Work on the decorations in the slides. Now the AI has a better understanding of how to position the decorations so that they don't obscure the text in the slide.
+- The AI no longer repeats the same points in the slide descriptions. Now there is a title slide and an end slide.
+- Minor improvements and improvements
 
 ## ✨ Features
 
@@ -76,3 +81,4 @@ I plan to continue developing this project and really hope for your support. Tha
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=lordofsunshine/ai-powerpoint-generator-agent&type=Date)](https://www.star-history.com/#lordofsunshine/ai-powerpoint-generator-agent&Date)
+
