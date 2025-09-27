@@ -25,8 +25,8 @@ def get_resource_path(relative_path):
 class CLIInterface:
     def __init__(self):
         self.console = Console()
-        self.service = PresentationService()
         self.loc = get_localization_manager()
+        self.service = PresentationService(interface_language=self.loc.current_language)
         
     def show_header(self):
         header_text = Text()

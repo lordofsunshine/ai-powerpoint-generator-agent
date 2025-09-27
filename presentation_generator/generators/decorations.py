@@ -78,42 +78,82 @@ class SlideDecorator:
         
         self.decoration_styles = [
             'geometric_modern', 'organic_flow', 'minimal_lines', 'dynamic_shapes',
-            'gradient_waves', 'abstract_art', 'tech_grid', 'nature_inspired'
+            'abstract_art', 'tech_grid', 'nature_inspired'
         ]
         
         self.current_scheme = None
         self.slide_counter = 0
     
-    def _get_safe_position(self, slide, min_width, max_width, min_height, max_height):
+    def _get_safe_position(self, slide, min_width, max_width, min_height, max_height, decoration_type="normal"):
         text_areas = self._get_text_areas(slide)
-        max_attempts = 50
+        max_attempts = 100
         
-        for _ in range(max_attempts):
+        safe_zones = self._get_safe_zones(text_areas, decoration_type)
+        
+        for attempt in range(max_attempts):
             width = Inches(random.uniform(min_width, max_width))
             height = Inches(random.uniform(min_height, max_height))
             
-            x = Inches(random.uniform(7.5, 9.5 - width.inches))
-            y = Inches(random.uniform(0.5, 6.5 - height.inches))
+            zone = random.choice(safe_zones)
+            x = Inches(random.uniform(zone['x_min'], zone['x_max'] - width.inches))
+            y = Inches(random.uniform(zone['y_min'], zone['y_max'] - height.inches))
             
-            if not self._overlaps_with_text(x, y, width, height, text_areas):
-                return x, y, width, height
+            if x.inches >= 0 and y.inches >= 0 and (x.inches + width.inches) <= 10 and (y.inches + height.inches) <= 7.5:
+                if not self._overlaps_with_text(x, y, width, height, text_areas):
+                    return x, y, width, height
         
-        return Inches(8.5), Inches(5.5), width, height
+        fallback_zone = safe_zones[0]
+        fallback_width = Inches(random.uniform(min_width, max_width))
+        fallback_height = Inches(random.uniform(min_height, max_height))
+        return Inches(max(0, fallback_zone['x_min'])), Inches(max(0, fallback_zone['y_min'])), fallback_width, fallback_height
     
     def _get_text_areas(self, slide):
         text_areas = []
         for shape in slide.shapes:
             if hasattr(shape, 'text_frame') and shape.text_frame.text.strip():
                 text_areas.append({
-                    'left': shape.left,
-                    'top': shape.top,
-                    'right': shape.left + shape.width,
-                    'bottom': shape.top + shape.height
+                    'left': shape.left.inches,
+                    'top': shape.top.inches,
+                    'right': shape.left.inches + shape.width.inches,
+                    'bottom': shape.top.inches + shape.height.inches
                 })
         return text_areas
     
+    def _get_safe_zones(self, text_areas, decoration_type):
+        slide_width = 10
+        slide_height = 7.5
+        
+        if decoration_type == "background":
+            return [{'x_min': 0.1, 'x_max': 9.9, 'y_min': 0.1, 'y_max': 7.4}]
+        
+        zones = [
+            {'x_min': 7.5, 'x_max': 9.8, 'y_min': 0.2, 'y_max': 2.5},
+            {'x_min': 8.0, 'x_max': 9.8, 'y_min': 2.8, 'y_max': 4.5},
+            {'x_min': 7.2, 'x_max': 9.8, 'y_min': 5.0, 'y_max': 7.2},
+            {'x_min': 0.2, 'x_max': 2.0, 'y_min': 0.2, 'y_max': 1.5},
+            {'x_min': 0.2, 'x_max': 1.8, 'y_min': 6.5, 'y_max': 7.3}
+        ]
+        
+        safe_zones = []
+        for zone in zones:
+            zone_clear = True
+            for area in text_areas:
+                if not (zone['x_max'] < area['left'] or 
+                       zone['x_min'] > area['right'] or 
+                       zone['y_max'] < area['top'] or 
+                       zone['y_min'] > area['bottom']):
+                    zone_clear = False
+                    break
+            if zone_clear and (zone['x_max'] - zone['x_min']) > 0.5 and (zone['y_max'] - zone['y_min']) > 0.5:
+                safe_zones.append(zone)
+        
+        if not safe_zones:
+            safe_zones = [{'x_min': 8.5, 'x_max': 9.8, 'y_min': 6.0, 'y_max': 7.2}]
+        
+        return safe_zones
+    
     def _overlaps_with_text(self, x, y, width, height, text_areas):
-        buffer = Inches(0.3)
+        buffer = Inches(0.4)
         decoration_left = x - buffer
         decoration_right = x + width + buffer
         decoration_top = y - buffer
@@ -156,8 +196,6 @@ class SlideDecorator:
             self._add_minimal_lines(slide)
         elif decoration_style == "dynamic_shapes":
             self._add_dynamic_shapes(slide)
-        elif decoration_style == "gradient_waves":
-            self._add_gradient_waves(slide)
         elif decoration_style == "abstract_art":
             self._add_abstract_art(slide)
         elif decoration_style == "tech_grid":
@@ -167,18 +205,31 @@ class SlideDecorator:
     
     def _choose_decoration_style(self, slide_index: int, total_slides: int, slide_type: str) -> str:
         if slide_index == 0:
-            return random.choice(['geometric_modern', 'gradient_waves', 'abstract_art'])
+            return random.choice(['geometric_modern', 'abstract_art', 'minimal_lines'])
         elif slide_type == "section":
             return random.choice(['minimal_lines', 'dynamic_shapes', 'organic_flow'])
         else:
-            return random.choice(self.decoration_styles)
+            used_styles = getattr(self, '_used_styles', [])
+            available_styles = [s for s in self.decoration_styles if s not in used_styles[-3:]]
+            
+            if not available_styles:
+                available_styles = self.decoration_styles
+                self._used_styles = []
+            
+            chosen_style = random.choice(available_styles)
+            
+            if not hasattr(self, '_used_styles'):
+                self._used_styles = []
+            self._used_styles.append(chosen_style)
+            
+            return chosen_style
     
     def _add_geometric_modern(self, slide):
-        shapes_count = random.randint(3, 6)
+        shapes_count = random.randint(2, 4)
         for i in range(shapes_count):
             shape_type = random.choice([MSO_SHAPE.RECTANGLE, MSO_SHAPE.ROUNDED_RECTANGLE, MSO_SHAPE.HEXAGON])
             
-            x, y, width, height = self._get_safe_position(slide, 0.8, 2, 0.8, 2)
+            x, y, width, height = self._get_safe_position(slide, 0.6, 1.5, 0.6, 1.5, "small")
             
             shape = slide.shapes.add_shape(shape_type, x, y, width, height)
             
@@ -191,56 +242,60 @@ class SlideDecorator:
                 shape.fill.background()
                 line = shape.line
                 line.color.rgb = self.current_scheme['secondary']
-                line.width = Pt(3)
+                line.width = Pt(2)
             
-            shape.rotation = random.randint(-30, 30)
+            shape.rotation = random.randint(-20, 20)
     
     def _add_organic_flow(self, slide):
-        for i in range(random.randint(2, 4)):
-            x, y, width, height = self._get_safe_position(slide, 1, 3, 0.5, 2)
+        for i in range(random.randint(2, 3)):
+            x, y, width, height = self._get_safe_position(slide, 0.8, 2.0, 0.4, 1.5, "medium")
             
             shape = slide.shapes.add_shape(MSO_SHAPE.OVAL, x, y, width, height)
             
             fill = shape.fill
             fill.solid()
-            color = self.current_scheme['secondary']
+            base_color = self.current_scheme['secondary']
             fill.fore_color.rgb = RGBColor(
-                random.randint(100, 200),
-                random.randint(150, 255),
-                random.randint(150, 255)
+                min(255, max(50, base_color[0] + random.randint(-30, 30))),
+                min(255, max(50, base_color[1] + random.randint(-30, 30))),
+                min(255, max(50, base_color[2] + random.randint(-30, 30)))
             )
             
             shape.line.fill.background()
-            shape.rotation = random.randint(-45, 45)
+            shape.rotation = random.randint(-30, 30)
     
     def _add_minimal_lines(self, slide):
-        line_count = random.randint(2, 5)
+        line_count = random.randint(3, 5)
         for i in range(line_count):
+            safe_zones = self._get_safe_zones(self._get_text_areas(slide), "line")
+            if safe_zones:
+                zone = random.choice(safe_zones)
+                
             if random.choice([True, False]):
                 line = slide.shapes.add_connector(
                     1,
-                    Inches(random.uniform(0.5, 9)),
-                    Inches(random.uniform(1, 2)),
-                    Inches(random.uniform(0.5, 9)),
-                    Inches(random.uniform(1, 2))
+                        Inches(zone['x_min']),
+                        Inches(random.uniform(zone['y_min'], zone['y_max'])),
+                        Inches(zone['x_max']),
+                        Inches(random.uniform(zone['y_min'], zone['y_max']))
                 )
             else:
                 line = slide.shapes.add_connector(
                     1,
-                    Inches(random.uniform(0.5, 1.5)),
-                    Inches(random.uniform(1, 6)),
-                    Inches(random.uniform(0.5, 1.5)),
-                    Inches(random.uniform(1, 6))
+                        Inches(random.uniform(zone['x_min'], zone['x_max'])),
+                        Inches(zone['y_min']),
+                        Inches(random.uniform(zone['x_min'], zone['x_max'])),
+                        Inches(zone['y_max'])
                 )
             
-            line.line.color.rgb = self.current_scheme['primary']
-            line.line.width = Pt(random.randint(2, 6))
+                line.line.color.rgb = self.current_scheme['primary']
+                line.line.width = Pt(random.randint(1, 3))
     
     def _add_dynamic_shapes(self, slide):
         shapes = [MSO_SHAPE.DIAMOND, MSO_SHAPE.PENTAGON, MSO_SHAPE.HEXAGON, MSO_SHAPE.ROUNDED_RECTANGLE]
         
-        for i in range(random.randint(3, 5)):
-            x, y, width, height = self._get_safe_position(slide, 0.6, 1.5, 0.6, 1.5)
+        for i in range(random.randint(2, 4)):
+            x, y, width, height = self._get_safe_position(slide, 0.5, 1.2, 0.5, 1.2, "small")
             
             shape = slide.shapes.add_shape(random.choice(shapes), x, y, width, height)
             
@@ -253,15 +308,28 @@ class SlideDecorator:
                 shape.fill.background()
                 line = shape.line
                 line.color.rgb = self.current_scheme['primary']
-                line.width = Pt(2)
+                line.width = Pt(1)
             
-            shape.rotation = random.randint(0, 360)
+            shape.rotation = random.randint(0, 180)
     
     def _add_gradient_waves(self, slide):
+        text_areas = self._get_text_areas(slide)
+        
+        safe_y_position = 6.0
+        for area in text_areas:
+            if area['bottom'] > safe_y_position:
+                safe_y_position = area['bottom'] + 0.3
+        
+        if safe_y_position > 6.5:
+            safe_y_position = 0.2
+            wave_height = 1.0
+        else:
+            wave_height = min(1.5, 7.5 - safe_y_position - 0.2)
+        
         wave_shape = slide.shapes.add_shape(
             MSO_SHAPE.WAVE,
-            Inches(0), Inches(6),
-            Inches(10), Inches(1.5)
+            Inches(0), Inches(safe_y_position),
+            Inches(10), Inches(wave_height)
         )
         
         fill = wave_shape.fill
@@ -273,10 +341,10 @@ class SlideDecorator:
         line.width = Pt(2)
     
     def _add_abstract_art(self, slide):
-        for i in range(random.randint(4, 7)):
+        for i in range(random.randint(3, 5)):
             shape_type = random.choice([MSO_SHAPE.OVAL, MSO_SHAPE.ROUNDED_RECTANGLE, MSO_SHAPE.DIAMOND])
             
-            x, y, width, height = self._get_safe_position(slide, 0.3, 1.2, 0.3, 1.2)
+            x, y, width, height = self._get_safe_position(slide, 0.4, 1.0, 0.4, 1.0, "small")
             
             shape = slide.shapes.add_shape(shape_type, x, y, width, height)
             
@@ -287,7 +355,7 @@ class SlideDecorator:
             fill.fore_color.rgb = random.choice(colors)
             
             shape.line.fill.background()
-            shape.rotation = random.randint(0, 360)
+            shape.rotation = random.randint(0, 180)
     
     def _add_tech_grid(self, slide):
         grid_size = 0.3
@@ -310,8 +378,8 @@ class SlideDecorator:
     def _add_nature_inspired(self, slide):
         leaf_shapes = [MSO_SHAPE.OVAL, MSO_SHAPE.ROUNDED_RECTANGLE, MSO_SHAPE.TEAR]
         
-        for i in range(random.randint(3, 6)):
-            x, y, width, height = self._get_safe_position(slide, 0.4, 1, 0.8, 2)
+        for i in range(random.randint(2, 4)):
+            x, y, width, height = self._get_safe_position(slide, 0.5, 1.0, 0.6, 1.5, "medium")
             
             shape = slide.shapes.add_shape(random.choice(leaf_shapes), x, y, width, height)
             
@@ -327,7 +395,7 @@ class SlideDecorator:
             fill.fore_color.rgb = random.choice(green_variations)
             
             shape.line.fill.background()
-            shape.rotation = random.randint(-30, 30)
+            shape.rotation = random.randint(-20, 20)
     
     def apply_advanced_text_formatting(self, text_frame, slide_type: str = "content", content: str = ""):
         if self.current_scheme is None:

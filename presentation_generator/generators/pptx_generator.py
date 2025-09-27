@@ -34,7 +34,11 @@ class PPTXGenerator:
         title = slide.shapes.title
         subtitle = slide.placeholders[1]
         
-        title.text = presentation.title
+        if presentation.title_slide_header:
+            title.text = presentation.title_slide_header
+        else:
+            title.text = presentation.title
+            
         if presentation.summary:
             subtitle.text = presentation.summary
         else:
@@ -126,9 +130,14 @@ class PPTXGenerator:
             else:
                 p = content_frame.add_paragraph()
             
-            p.text = f"• {item.strip()}"
+            clean_item = item.strip()
+            if not clean_item.startswith('•'):
+                clean_item = f"• {clean_item}"
+            
+            p.text = clean_item
             p.level = 0
-            p.space_after = Pt(16)
+            p.space_after = Pt(14)
+            p.line_spacing = 1.3
             self._apply_enhanced_list_styling(p, i)
         
         self.decorator.add_slide_decoration(slide, slide_index, total_slides, "list", presentation_title)
@@ -299,12 +308,9 @@ class PPTXGenerator:
         content_frame.word_wrap = True
         
         truncated_content = self._truncate_content_for_slide(slide_content, "content")
-        content_frame.text = truncated_content
-        
-        self._apply_modern_content_styling(content_frame)
+        self._add_formatted_content_to_frame(content_frame, truncated_content)
         
         self.decorator.add_slide_decoration(slide, slide_index, total_slides, "content", presentation_title)
-        self.decorator.apply_advanced_text_formatting(content_frame, "content", truncated_content)
     
     def _extract_enhanced_list_items(self, content: str) -> List[str]:
         lines = content.split('\n')
@@ -318,7 +324,7 @@ class PPTXGenerator:
             if line.startswith(('•', '-', '1.', '2.', '3.', '4.', '5.')):
                 if current_item:
                     items.append(current_item)
-                current_item = re.sub(r'^[•\-\d\.]\s*', '', line)
+                current_item = re.sub(r'^[•\-\d\.]\s*', '', line).strip()
             else:
                 if current_item:
                     current_item += f" {line}"
@@ -409,19 +415,31 @@ class PPTXGenerator:
     
     def _apply_enhanced_list_styling(self, paragraph, index: int) -> None:
         paragraph.alignment = PP_ALIGN.LEFT
-        paragraph.space_after = Pt(12)
-        paragraph.line_spacing = 1.2
+        paragraph.space_after = Pt(14)
+        paragraph.line_spacing = 1.4
         
-        for run in paragraph.runs:
-            font = run.font
-            font.name = 'Open Sans'
-            font.size = Pt(18)
-            font.color.rgb = self.decorator.current_scheme['text']
+        text = paragraph.text
+        paragraph.clear()
+        
+        if text.startswith('•'):
+            bullet_run = paragraph.add_run()
+            bullet_run.text = '• '
+            bullet_run.font.name = 'Arial'
+            bullet_run.font.size = Pt(18)
+            bullet_run.font.color.rgb = self.decorator.current_scheme['accent']
+            bullet_run.font.bold = True
             
-            if run.text.startswith('•'):
-                font.color.rgb = self.decorator.current_scheme['accent']
-                font.size = Pt(22)
-                font.bold = True
+            content_run = paragraph.add_run()
+            content_run.text = text[2:].strip()
+            content_run.font.name = 'Open Sans'
+            content_run.font.size = Pt(16)
+            content_run.font.color.rgb = self.decorator.current_scheme['text']
+        else:
+            content_run = paragraph.add_run()
+            content_run.text = text
+            content_run.font.name = 'Open Sans'
+            content_run.font.size = Pt(16)
+            content_run.font.color.rgb = self.decorator.current_scheme['text']
     
     def _apply_comparison_styling(self, text_frame, side: str) -> None:
         for paragraph in text_frame.paragraphs:
@@ -460,17 +478,72 @@ class PPTXGenerator:
                 else:
                     font.color.rgb = self.decorator.current_scheme['text']
     
-    def _apply_modern_content_styling(self, text_frame) -> None:
-        text_frame.word_wrap = True
-        for paragraph in text_frame.paragraphs:
-            paragraph.alignment = PP_ALIGN.LEFT
-            paragraph.space_after = Pt(12)
-            paragraph.line_spacing = 1.4
-            for run in paragraph.runs:
-                font = run.font
-                font.name = 'Open Sans'
-                font.size = Pt(16)
-                font.color.rgb = self.decorator.current_scheme['text']
+    def _add_formatted_content_to_frame(self, content_frame, content: str) -> None:
+        content_frame.clear()
+        paragraphs_text = content.split('\\n\\n')
+        
+        for para_index, para_text in enumerate(paragraphs_text):
+            para_text = para_text.strip()
+            if not para_text:
+                continue
+                
+            if para_index == 0:
+                p = content_frame.paragraphs[0]
+            else:
+                p = content_frame.add_paragraph()
+            
+            if '\\n' in para_text and '\u2022' in para_text:
+                lines = para_text.split('\\n')
+                first_line = True
+                for line in lines:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    
+                    if line.startswith('\u2022'):
+                        if not first_line:
+                            p = content_frame.add_paragraph()
+                        
+                        bullet_run = p.add_run()
+                        bullet_run.text = '\u2022 '
+                        bullet_run.font.name = 'Arial'
+                        bullet_run.font.size = Pt(16)
+                        bullet_run.font.color.rgb = self.decorator.current_scheme['accent']
+                        bullet_run.font.bold = True
+                        
+                        content_run = p.add_run()
+                        content_run.text = line[1:].strip()
+                        content_run.font.name = 'Open Sans'
+                        content_run.font.size = Pt(15)
+                        content_run.font.color.rgb = self.decorator.current_scheme['text']
+                        
+                        p.space_after = Pt(8)
+                        p.line_spacing = 1.3
+                        first_line = False
+                    else:
+                        if first_line:
+                            content_run = p.add_run()
+                            content_run.text = line
+                            content_run.font.name = 'Open Sans'
+                            content_run.font.size = Pt(16)
+                            content_run.font.color.rgb = self.decorator.current_scheme['text']
+                            first_line = False
+                        else:
+                            content_run = p.add_run()
+                            content_run.text = f" {line}"
+                            content_run.font.name = 'Open Sans'
+                            content_run.font.size = Pt(16)
+                            content_run.font.color.rgb = self.decorator.current_scheme['text']
+            else:
+                content_run = p.add_run()
+                content_run.text = para_text
+                content_run.font.name = 'Open Sans'
+                content_run.font.size = Pt(16)
+                content_run.font.color.rgb = self.decorator.current_scheme['text']
+            
+            p.alignment = PP_ALIGN.LEFT
+            p.space_after = Pt(12)
+            p.line_spacing = 1.4
     
     def _validate_slide_content(self, content: str) -> bool:
         if not content or len(content.strip()) < 10:
@@ -495,17 +568,31 @@ class PPTXGenerator:
     
     def _truncate_content_for_slide(self, content: str, slide_type: str) -> str:
         max_chars = {
-            "content": 800,
-            "list": 600,
-            "comparison": 400,
-            "highlight": 300,
-            "process": 500
+            "content": 900,
+            "list": 700,
+            "comparison": 500,
+            "highlight": 350,
+            "process": 600
         }
         
-        max_length = max_chars.get(slide_type, 600)
+        max_length = max_chars.get(slide_type, 700)
         
         if len(content) <= max_length:
             return content
+        
+        lines = content.split('\\n')
+        truncated_lines = []
+        current_length = 0
+        
+        for line in lines:
+            if current_length + len(line) <= max_length:
+                truncated_lines.append(line)
+                current_length += len(line) + 1
+            else:
+                break
+        
+        if truncated_lines:
+            return '\\n'.join(truncated_lines)
         
         truncated = content[:max_length]
         last_period = truncated.rfind('.')

@@ -99,7 +99,17 @@ TRANSLATIONS = {
         "section_default": "Секция",
         "slide_default": "Слайд",
         "slide_content_default": "Содержимое для слайда",
-        "presentation_topic": "Презентация на тему:"
+        "presentation_topic": "Презентация на тему:",
+        "remaining_time": "осталось",
+        "seconds": "сек",
+        "hours": "ч",
+        "estimated_time": "примерное время",
+        "time_remaining": "времени осталось",
+        "decoration_smart_placement": "Умное размещение декораций",
+        "content_formatting": "Форматирование контента",
+        "line_break_optimization": "Оптимизация переносов строк",
+        "time_estimation": "Оценка времени выполнения",
+        "creating_conclusion": "Создание заключительного слайда..."
     },
     
     "english": {
@@ -205,6 +215,16 @@ TRANSLATIONS = {
         "section_default": "Section",
         "slide_default": "Slide",
         "slide_content_default": "Content for slide",
-        "presentation_topic": "Presentation on topic:"
+        "presentation_topic": "Presentation on topic:",
+        "remaining_time": "remaining",
+        "seconds": "sec",
+        "hours": "h",
+        "estimated_time": "estimated time",
+        "time_remaining": "time remaining",
+        "decoration_smart_placement": "Smart decoration placement",
+        "content_formatting": "Content formatting",
+        "line_break_optimization": "Line break optimization",
+        "time_estimation": "Time estimation",
+        "creating_conclusion": "⠴ Creating conclusion slide..."
     }
 }

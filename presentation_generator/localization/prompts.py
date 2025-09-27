@@ -16,7 +16,7 @@ PROMPTS = {
         """,
         
         "slide_titles": """
-        Ты мастер создания захватывающих презентаций. Создай {count} заголовка слайдов для секции "{section_title}" в презентации "{presentation_title}".
+        Ты мастер создания захватывающих презентаций. Создай {count} УНИКАЛЬНЫХ заголовка слайдов для секции "{section_title}" в презентации "{presentation_title}".
         
         ТРЕБОВАНИЯ:
         - Заголовки должны раскрывать секцию пошагово и логично
@@ -25,54 +25,112 @@ PROMPTS = {
         - Длина: 2-7 слов
         - Создавай эмоциональную связь с аудиторией
         - Избегай скучных академических формулировок
+        - КАЖДЫЙ заголовок должен быть УНИКАЛЬНЫМ
+        - НЕ ПОВТОРЯЙ похожие формулировки
+        - Избегай одинаковых начал фраз
+        - Каждый слайд должен иметь свой уникальный фокус
         
         Отвечай только в JSON формате:
-        {{"titles": ["Слайд 1", "Слайд 2", "Слайд 3"]}}
+        {{"titles": ["Уникальный заголовок 1", "Уникальный заголовок 2", "Уникальный заголовок 3"]}}
         """,
         
         "slide_content": """
-        Ты виртуозный создатель презентационного контента. Создай увлекательное содержимое для слайда "{slide_title}" в секции "{section_title}".
+        Вы эксперт по созданию профессионального презентационного контента. Создайте содержимое для слайда "{slide_title}" в секции "{section_title}".
         
-        КРИТИЧЕСКИ ВАЖНЫЕ ТРЕБОВАНИЯ:
-        - НЕ используй markdown форматирование (**, *, _, # и т.д.)
-        - НЕ оставляй пустые строки или незаполненные места
-        - НЕ используй фразы-заполнители
+        КРИТИЧЕСКИ ВАЖНЫЕ ТРЕБОВАНИЯ К ФОРМАТИРОВАНИЮ:
+        - НЕ используйте markdown форматирование (**, *, _, # и т.д.)
+        - Обеспечьте правильные переносы строк для читаемости
+        - Для списков используйте "• " в начале каждого пункта с новой строки
+        - Между основными блоками информации делайте пустую строку
         - Содержимое должно быть ПОЛНЫМ и ЗАВЕРШЕННЫМ
-        - Объем: 120-280 слов
+        - Объем: 80-150 слов (для хорошей читаемости на слайде)
+        - НЕ ПОВТОРЯЙ информацию из других слайдов
+        - Каждый слайд должен содержать УНИКАЛЬНУЮ информацию
+        - Избегай дублирования фактов и примеров
+        - Создавай разнообразный контент для каждого слайда
         
-        ТРЕБОВАНИЯ К КАЧЕСТВУ КОНТЕНТА:
-        - Создавай живой, увлекательный текст с конкретными примерами
-        - Используй storytelling элементы где уместно
-        - Включай конкретные цифры, факты, статистику
-        - Добавляй практические советы и рекомендации
-        - Используй активный залог и динамичные формулировки
-        - Создавай эмоциональную вовлеченность
-        - Структурируй информацию логично (используй простые маркеры • или цифры для списков)
-        - Завершай каждое предложение правильной пунктуацией
-        - Избегай академического стиля - пиши живо и интересно
+        ТРЕБОВАНИЯ К СТИЛЮ И ТОНУ:
+        - Используйте профессиональный, но доступный язык
+        - Сочетайте официальный тон с живыми примерами
+        - Пишите естественно, как эксперт, объясняющий коллегам
+        - Избегайте излишне сухого академического языка
+        - Включайте конкретные факты, цифры и статистику
+        - Добавляйте практические советы и применимые рекомендации
         
-        СТИЛИСТИЧЕСКИЕ ПРИЕМЫ:
-        - Используй риторические вопросы для вовлечения
-        - Добавляй неожиданные факты и инсайты
-        - Создавай яркие образы и метафоры
-        - Включай элементы интерактивности ("Представьте себе...", "Задумайтесь о...")
+        СТРУКТУРИРОВАНИЕ КОНТЕНТА:
+        - Начинайте с ключевой мысли или важного факта
+        - Логично развивайте тему от общего к частному
+        - Для перечислений используйте маркированные списки с новой строки
+        - Завершайте выводом или практическим применением
+        - Каждый абзац должен нести смысловую нагрузку
         
-        Отвечай только в JSON формате:
-        {{"content": "Захватывающий и информативный контент с конкретными примерами, цифрами и практическими советами..."}}
+        ПРИЕМЫ ВОВЛЕЧЕНИЯ:
+        - Используйте релевантные примеры из практики
+        - Приводите измеримые результаты и достижения
+        - Задавайте риторические вопросы для акцентирования внимания
+        - Включайте элементы "Важно отметить", "Следует подчеркнуть"
+        
+        Отвечайте только в JSON формате:
+        {{"content": "Профессионально структурированный контент с правильными переносами строк и маркированными списками..."}}
         """,
         
         "presentation_summary": """
-        Создай яркое и привлекательное описание для презентации на тему "{title}".
+        Создайте профессиональное описание для презентации на тему "{title}".
         
-        ТРЕБОВАНИЯ:
-        - Описание должно интриговать и мотивировать к просмотру
-        - Используй активные, энергичные формулировки
-        - Подчеркни практическую ценность и пользу
-        - Длина: 1-2 предложения
-        - Избегай банальных фраз
+        ТРЕБОВАНИЯ К СТИЛЮ:
+        - Используйте официально-деловой тон с элементами живого изложения
+        - Описание должно быть информативным и мотивирующим одновременно
+        - Подчеркните практическую значимость и применимость материала
+        - Избегайте излишне рекламных или эмоциональных формулировок
+        - Пишите как эксперт, представляющий важную тему
         
-        Отвечай только в JSON формате:
-        {{"summary": "Увлекательное описание, которое заставляет хотеть узнать больше..."}}
+        СТРУКТУРА ОПИСАНИЯ:
+        - Начните с сути темы и её актуальности
+        - Укажите на ключевые аспекты, которые будут рассмотрены
+        - Подчеркните практическую ценность для аудитории
+        - Длина: 2-3 предложения
+        
+        Отвечайте только в JSON формате:
+        {{"summary": "Профессиональное описание с балансом официального тона и практической применимости..."}}
+        """,
+        
+        "title_slide_header": """
+        Создайте КРАТКИЙ и ЗАПОМИНАЮЩИЙСЯ заголовок для титульного слайда презентации на тему "{topic}".
+        
+        ТРЕБОВАНИЯ К ЗАГОЛОВКУ:
+        - Максимум 3-4 слова
+        - Простой и понятный язык
+        - Без длинных фраз и сложных конструкций
+        - Создайте интригу одним словом или короткой фразой
+        - Заголовок должен отличаться от исходной темы презентации
+        
+        ПРИМЕРЫ КРАТКИХ ЗАГОЛОВКОВ:
+        - Для темы "Искусственный интеллект": "ИИ меняет мир"
+        - Для темы "Маркетинг": "Секреты успеха"
+        - Для темы "Финансы": "Умные инвестиции"
+        
+        Отвечайте только в JSON формате:
+        {{"title": "Краткий заголовок", "description": "Одно короткое предложение о теме презентации"}}
+        """,
+        
+        "conclusion_slide": """
+        Создайте заключительный слайд для презентации на тему "{presentation_title}".
+        
+        ТРЕБОВАНИЯ К ЗАКЛЮЧИТЕЛЬНОМУ СЛАЙДУ:
+        - Создайте краткие итоги по основным пунктам презентации
+        - Подведите ключевые выводы из рассмотренного материала
+        - Добавьте призыв к действию или практические рекомендации
+        - Завершите на позитивной и мотивирующей ноте
+        - Объем: 60-120 слов
+        
+        СТРУКТУРА ЗАКЛЮЧЕНИЯ:
+        - Начните с фразы подведения итогов
+        - Перечислите 2-3 ключевых вывода
+        - Завершите практическим применением или призывом к действию
+        - Используйте маркированные списки для ключевых пунктов
+        
+        Отвечайте только в JSON формате:
+        {{"title": "Заключение и итоги", "content": "Итоговый контент с выводами и призывом к действию..."}}
         """,
         
         "correct_title": """
@@ -165,7 +223,7 @@ PROMPTS = {
         """,
         
         "slide_titles": """
-        You are a master at creating captivating presentations. Create {count} slide titles for section "{section_title}" in presentation "{presentation_title}".
+        You are a master at creating captivating presentations. Create {count} UNIQUE slide titles for section "{section_title}" in presentation "{presentation_title}".
         
         REQUIREMENTS:
         - Titles should reveal the section step-by-step and logically
@@ -174,54 +232,112 @@ PROMPTS = {
         - Length: 2-7 words
         - Create emotional connection with audience
         - Avoid boring academic formulations
+        - EACH title must be UNIQUE
+        - DO NOT REPEAT similar formulations
+        - Avoid identical phrase beginnings
+        - Each slide should have its own unique focus
         
         Respond only in JSON format:
-        {{"titles": ["Slide 1", "Slide 2", "Slide 3"]}}
+        {{"titles": ["Unique Title 1", "Unique Title 2", "Unique Title 3"]}}
         """,
         
         "slide_content": """
-        You are a virtuoso creator of presentation content. Create engaging content for slide "{slide_title}" in section "{section_title}".
+        You are an expert in creating professional presentation content. Create content for slide "{slide_title}" in section "{section_title}".
         
-        CRITICAL REQUIREMENTS:
+        CRITICAL FORMATTING REQUIREMENTS:
         - DO NOT use markdown formatting (**, *, _, # etc.)
-        - DO NOT leave empty lines or unfilled spaces
-        - DO NOT use filler phrases
+        - Ensure proper line breaks for readability
+        - For lists use "• " at the beginning of each item on a new line
+        - Place empty lines between major information blocks
         - Content must be COMPLETE and FINISHED
-        - Length: 120-280 words
+        - Length: 80-150 words (for good slide readability)
+        - DO NOT REPEAT information from other slides
+        - Each slide should contain UNIQUE information
+        - Avoid duplicating facts and examples
+        - Create diverse content for each slide
         
-        CONTENT QUALITY REQUIREMENTS:
-        - Create lively, engaging text with specific examples
-        - Use storytelling elements where appropriate
-        - Include specific numbers, facts, statistics
-        - Add practical tips and recommendations
-        - Use active voice and dynamic formulations
-        - Create emotional engagement
-        - Structure information logically (use simple bullets • or numbers for lists)
-        - End each sentence with proper punctuation
-        - Avoid academic style - write lively and interestingly
+        STYLE AND TONE REQUIREMENTS:
+        - Use professional but accessible language
+        - Combine official tone with vivid examples
+        - Write naturally, as an expert explaining to colleagues
+        - Avoid overly dry academic language
+        - Include specific facts, numbers and statistics
+        - Add practical advice and applicable recommendations
         
-        STYLISTIC TECHNIQUES:
-        - Use rhetorical questions for engagement
-        - Add unexpected facts and insights
-        - Create vivid images and metaphors
-        - Include interactive elements ("Imagine...", "Think about...")
+        CONTENT STRUCTURING:
+        - Start with key thought or important fact
+        - Logically develop topic from general to specific
+        - For lists use bulleted lists on new lines
+        - End with conclusion or practical application
+        - Each paragraph should carry meaningful content
+        
+        ENGAGEMENT TECHNIQUES:
+        - Use relevant examples from practice
+        - Provide measurable results and achievements
+        - Ask rhetorical questions to focus attention
+        - Include elements like "Important to note", "Should be emphasized"
         
         Respond only in JSON format:
-        {{"content": "Captivating and informative content with specific examples, numbers and practical advice..."}}
+        {{"content": "Professionally structured content with proper line breaks and bulleted lists..."}}
         """,
         
         "presentation_summary": """
-        Create a bright and attractive description for a presentation on "{title}".
+        Create a professional description for a presentation on "{title}".
         
-        REQUIREMENTS:
-        - Description should intrigue and motivate viewing
-        - Use active, energetic formulations
-        - Emphasize practical value and benefit
-        - Length: 1-2 sentences
-        - Avoid banal phrases
+        STYLE REQUIREMENTS:
+        - Use official-business tone with elements of vivid presentation
+        - Description should be informative and motivating simultaneously
+        - Emphasize practical significance and applicability of material
+        - Avoid overly promotional or emotional formulations
+        - Write as an expert presenting an important topic
+        
+        DESCRIPTION STRUCTURE:
+        - Start with essence of topic and its relevance
+        - Point to key aspects that will be covered
+        - Emphasize practical value for audience
+        - Length: 2-3 sentences
         
         Respond only in JSON format:
-        {{"summary": "Fascinating description that makes you want to know more..."}}
+        {{"summary": "Professional description with balance of official tone and practical applicability..."}}
+        """,
+        
+        "title_slide_header": """
+        Create a SHORT and MEMORABLE title for the title slide of a presentation on "{topic}".
+        
+        TITLE REQUIREMENTS:
+        - Maximum 3-4 words
+        - Simple and clear language
+        - No long phrases or complex constructions
+        - Create intrigue with one word or short phrase
+        - Title should differ from the original presentation topic
+        
+        EXAMPLES OF SHORT TITLES:
+        - For topic "Artificial Intelligence": "AI Changes World"
+        - For topic "Marketing": "Success Secrets"
+        - For topic "Finance": "Smart Investments"
+        
+        Respond only in JSON format:
+        {{"title": "Short title", "description": "One short sentence about the presentation topic"}}
+        """,
+        
+        "conclusion_slide": """
+        Create a conclusion slide for a presentation on "{presentation_title}".
+        
+        CONCLUSION SLIDE REQUIREMENTS:
+        - Create brief summaries of main presentation points
+        - Provide key conclusions from the material covered
+        - Add call to action or practical recommendations
+        - End on a positive and motivating note
+        - Length: 60-120 words
+        
+        CONCLUSION STRUCTURE:
+        - Start with a summary phrase
+        - List 2-3 key findings
+        - End with practical application or call to action
+        - Use bulleted lists for key points
+        
+        Respond only in JSON format:
+        {{"title": "Conclusions and Summary", "content": "Summary content with conclusions and call to action..."}}
         """,
         
         "correct_title": """

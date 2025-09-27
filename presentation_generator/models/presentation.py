@@ -35,6 +35,7 @@ class Presentation:
     title: str
     language: str = 'русский'
     summary: Optional[str] = None
+    title_slide_header: Optional[str] = None
     sections: List[Section] = field(default_factory=list)
     max_sections: int = 3
     max_slides: int = 4
@@ -49,6 +50,7 @@ class Presentation:
             'title': self.title,
             'language': self.language,
             'summary': self.summary,
+            'title_slide_header': self.title_slide_header,
             'sections': [section.to_dict() for section in (self.sections or [])],
             'max_sections': self.max_sections,
             'max_slides': self.max_slides,

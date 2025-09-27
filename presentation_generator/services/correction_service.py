@@ -71,7 +71,7 @@ class CorrectionService:
         prompt_lower = prompt.lower()
         
         title_keywords = ['заголовок', 'название', 'тему', 'переименуй', 'title']
-        content_keywords = ['содержание', 'текст', 'информацию', 'добавь', 'убери', 'content', 'text']
+        content_keywords = ['содержание', 'текст', 'информацию', 'добавь', 'убери', 'content', 'text', 'слайд', 'slide']
         structure_keywords = ['структуру', 'слайды', 'секции', 'разделы', 'structure', 'slides']
         style_keywords = ['стиль', 'оформление', 'дизайн', 'формат', 'style', 'design']
         
@@ -105,6 +105,11 @@ class CorrectionService:
         return presentation
     
     def _correct_content(self, presentation: Presentation, prompt: str, language: str, progress_callback: Optional[Callable[[str], None]] = None) -> Presentation:
+        target_slide = self._identify_target_slide(prompt)
+        
+        if target_slide is not None:
+            return self._correct_specific_slide(presentation, target_slide, prompt, language, progress_callback)
+        
         total_slides = sum(len(section.slides) for section in presentation.sections)
         current_slide = 0
         
@@ -195,3 +200,52 @@ class CorrectionService:
     
     def cleanup_db(self):
         self.db_manager.clear_all()
+    
+    def _identify_target_slide(self, prompt: str) -> Optional[int]:
+        prompt_lower = prompt.lower()
+        
+        slide_indicators = [
+            'первый слайд', 'первом слайде', 'первый', '1 слайд', '1-й слайд', '1-м слайде',
+            'второй слайд', 'втором слайде', 'второй', '2 слайд', '2-й слайд', '2-м слайде',
+            'третий слайд', 'третьем слайде', 'третий', '3 слайд', '3-й слайд', '3-м слайде',
+            'четвертый слайд', 'четвертом слайде', 'четвертый', '4 слайд', '4-й слайд', '4-м слайде',
+            'пятый слайд', 'пятом слайде', 'пятый', '5 слайд', '5-й слайд', '5-м слайде',
+            'first slide', 'second slide', 'third slide', 'fourth slide', 'fifth slide'
+        ]
+        
+        for i, indicator in enumerate(slide_indicators):
+            if indicator in prompt_lower:
+                return (i // 6) + 1
+        
+        return None
+    
+    def _correct_specific_slide(self, presentation: Presentation, slide_number: int, prompt: str, language: str, progress_callback: Optional[Callable[[str], None]] = None) -> Presentation:
+        current_slide = 0
+        target_found = False
+        
+        for section in presentation.sections:
+            for slide in section.slides:
+                current_slide += 1
+                if current_slide == slide_number:
+                    target_found = True
+                    if progress_callback:
+                        progress_callback(f"{self.loc.t('correcting_slide')} {current_slide}: {slide.title}")
+                    
+                    correction_prompt = self.loc.get_prompt(
+                        "correct_content",
+                        slide_title=slide.title,
+                        slide_content=slide.content,
+                        user_request=prompt
+                    )
+                    
+                    response = self.ai_service._make_request(correction_prompt, temperature=0.8)
+                    if response:
+                        parsed = self.ai_service._parse_json_response(response)
+                        if parsed and 'content' in parsed:
+                            slide.content = parsed['content']
+                    
+                    break
+            if target_found:
+                break
+        
+        return presentation

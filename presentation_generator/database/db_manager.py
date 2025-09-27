@@ -30,6 +30,7 @@ class DatabaseManager:
                 title TEXT NOT NULL,
                 language TEXT DEFAULT 'русский',
                 summary TEXT,
+                title_slide_header TEXT,
                 max_sections INTEGER DEFAULT 3,
                 max_slides INTEGER DEFAULT 4,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -65,12 +66,13 @@ class DatabaseManager:
         cursor = self.conn.cursor()
         
         cursor.execute('''
-            INSERT INTO presentations (title, language, summary, max_sections, max_slides, generated, data)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO presentations (title, language, summary, title_slide_header, max_sections, max_slides, generated, data)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             presentation.title,
             presentation.language,
             presentation.summary,
+            presentation.title_slide_header,
             presentation.max_sections,
             presentation.max_slides,
             presentation.generated,
@@ -109,6 +111,7 @@ class DatabaseManager:
             title=pres_row['title'],
             language=pres_row['language'],
             summary=pres_row['summary'],
+            title_slide_header=pres_row['title_slide_header'],
             max_sections=pres_row['max_sections'],
             max_slides=pres_row['max_slides'],
             generated=bool(pres_row['generated'])
@@ -144,12 +147,13 @@ class DatabaseManager:
         try:
             cursor.execute('''
                 UPDATE presentations 
-                SET title = ?, language = ?, summary = ?, max_sections = ?, max_slides = ?, generated = ?, data = ?
+                SET title = ?, language = ?, summary = ?, title_slide_header = ?, max_sections = ?, max_slides = ?, generated = ?, data = ?
                 WHERE id = ?
             ''', (
                 presentation.title,
                 presentation.language,
                 presentation.summary,
+                presentation.title_slide_header,
                 presentation.max_sections,
                 presentation.max_slides,
                 presentation.generated,

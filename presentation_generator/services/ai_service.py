@@ -209,3 +209,54 @@ class AIService:
         
         default_text = self.loc.t("presentation_topic")
         return f"{default_text} {presentation_title}"
+    
+    def generate_title_slide_header(self, topic: str, language: str = "русский") -> str:
+        prompt = self.loc.get_prompt(
+            "title_slide_header",
+            topic=topic
+        )
+        
+        response = self._make_request(prompt, temperature=0.8)
+        if not response:
+            return topic
+            
+        parsed = self._parse_json_response(response)
+        if parsed and 'title' in parsed:
+            return parsed['title']
+        
+        return topic
+    
+    def generate_title_slide_header(self, topic: str, language: str = "русский") -> str:
+        prompt = self.loc.get_prompt("title_slide_header", topic=topic)
+        
+        response = self._make_request(prompt, temperature=0.8)
+        if not response:
+            return topic
+            
+        parsed = self._parse_json_response(response)
+        if parsed and 'title' in parsed:
+            return parsed['title']
+        
+        return topic
+    
+    def generate_conclusion_slide(self, presentation_title: str, language: str = "русский") -> dict:
+        prompt = self.loc.get_prompt(
+            "conclusion_slide",
+            presentation_title=presentation_title
+        )
+        
+        response = self._make_request(prompt, temperature=0.7)
+        if not response:
+            return {
+                "title": "Заключение" if language == "русский" else "Conclusion",
+                "content": f"Спасибо за внимание! Презентация на тему '{presentation_title}' завершена."
+            }
+            
+        parsed = self._parse_json_response(response)
+        if parsed and 'title' in parsed and 'content' in parsed:
+            return {"title": parsed['title'], "content": parsed['content']}
+        
+        return {
+            "title": "Заключение" if language == "русский" else "Conclusion", 
+            "content": f"Спасибо за внимание! Презентация на тему '{presentation_title}' завершена."
+        }
