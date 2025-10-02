@@ -17,6 +17,8 @@ def get_resource_path(relative_path):
 
 class SlideDecorator:
     def __init__(self):
+        from ..localization.manager import get_localization_manager
+        self.loc = get_localization_manager()
         self.color_schemes = {
             'modern_blue': {
                 'primary': RGBColor(41, 98, 255),
@@ -73,6 +75,111 @@ class SlideDecorator:
                 'accent': RGBColor(16, 185, 129),
                 'background': RGBColor(253, 244, 255),
                 'text': RGBColor(112, 26, 117)
+            },
+            'deep_crimson': {
+                'primary': RGBColor(220, 38, 127),
+                'secondary': RGBColor(252, 165, 165),
+                'accent': RGBColor(34, 197, 94),
+                'background': RGBColor(254, 242, 242),
+                'text': RGBColor(127, 29, 29)
+            },
+            'royal_indigo': {
+                'primary': RGBColor(79, 70, 229),
+                'secondary': RGBColor(165, 180, 252),
+                'accent': RGBColor(251, 191, 36),
+                'background': RGBColor(238, 242, 255),
+                'text': RGBColor(30, 27, 75)
+            },
+            'emerald_mint': {
+                'primary': RGBColor(5, 150, 105),
+                'secondary': RGBColor(110, 231, 183),
+                'accent': RGBColor(249, 115, 22),
+                'background': RGBColor(236, 253, 245),
+                'text': RGBColor(6, 78, 59)
+            },
+            'golden_amber': {
+                'primary': RGBColor(217, 119, 6),
+                'secondary': RGBColor(254, 215, 170),
+                'accent': RGBColor(168, 85, 247),
+                'background': RGBColor(255, 251, 235),
+                'text': RGBColor(120, 53, 15)
+            },
+            'steel_slate': {
+                'primary': RGBColor(71, 85, 105),
+                'secondary': RGBColor(203, 213, 225),
+                'accent': RGBColor(239, 68, 68),
+                'background': RGBColor(248, 250, 252),
+                'text': RGBColor(15, 23, 42)
+            },
+            'cosmic_violet': {
+                'primary': RGBColor(124, 58, 237),
+                'secondary': RGBColor(196, 181, 253),
+                'accent': RGBColor(34, 197, 94),
+                'background': RGBColor(245, 243, 255),
+                'text': RGBColor(46, 16, 101)
+            },
+            'cherry_blossom': {
+                'primary': RGBColor(244, 63, 94),
+                'secondary': RGBColor(252, 231, 243),
+                'accent': RGBColor(59, 130, 246),
+                'background': RGBColor(255, 241, 242),
+                'text': RGBColor(136, 19, 55)
+            },
+            'arctic_cyan': {
+                'primary': RGBColor(6, 182, 212),
+                'secondary': RGBColor(165, 243, 252),
+                'accent': RGBColor(251, 146, 60),
+                'background': RGBColor(236, 254, 255),
+                'text': RGBColor(22, 78, 99)
+            },
+            'sunset_coral': {
+                'primary': RGBColor(251, 113, 133),
+                'secondary': RGBColor(254, 205, 211),
+                'accent': RGBColor(16, 185, 129),
+                'background': RGBColor(255, 228, 230),
+                'text': RGBColor(159, 18, 57)
+            },
+            'midnight_blue': {
+                'primary': RGBColor(30, 64, 175),
+                'secondary': RGBColor(147, 197, 253),
+                'accent': RGBColor(245, 158, 11),
+                'background': RGBColor(239, 246, 255),
+                'text': RGBColor(23, 37, 84)
+            },
+            'forest_moss': {
+                'primary': RGBColor(22, 101, 52),
+                'secondary': RGBColor(187, 247, 208),
+                'accent': RGBColor(239, 68, 68),
+                'background': RGBColor(240, 253, 244),
+                'text': RGBColor(14, 59, 30)
+            },
+            'lavender_dream': {
+                'primary': RGBColor(147, 51, 234),
+                'secondary': RGBColor(221, 214, 254),
+                'accent': RGBColor(251, 146, 60),
+                'background': RGBColor(250, 245, 255),
+                'text': RGBColor(88, 28, 135)
+            },
+            'bronze_gold': {
+                'primary': RGBColor(180, 83, 9),
+                'secondary': RGBColor(253, 186, 116),
+                'accent': RGBColor(168, 85, 247),
+                'background': RGBColor(255, 247, 237),
+                'text': RGBColor(154, 52, 18)
+            },
+            'ocean_depth': {
+                'primary': RGBColor(15, 118, 110),
+                'secondary': RGBColor(153, 246, 228),
+                'accent': RGBColor(251, 113, 133),
+                'background': RGBColor(240, 253, 250),
+                'text': RGBColor(19, 78, 74)
+            },
+            'ruby_wine': {
+                'primary': RGBColor(190, 18, 60),
+                'secondary': RGBColor(252, 165, 165),
+                'accent': RGBColor(34, 197, 94),
+                'background': RGBColor(255, 228, 230),
+                'text': RGBColor(127, 29, 29)
             }
         }
         
@@ -170,16 +277,47 @@ class SlideDecorator:
     def choose_color_scheme(self, presentation_title: str) -> dict:
         title_lower = presentation_title.lower()
         
-        if any(word in title_lower for word in ['бизнес', 'корпорат', 'финанс', 'business', 'corporate']):
-            return self.color_schemes['corporate_navy']
-        elif any(word in title_lower for word in ['креатив', 'дизайн', 'искусство', 'creative', 'design', 'art']):
-            return self.color_schemes['creative_magenta']
-        elif any(word in title_lower for word in ['природа', 'эко', 'зелен', 'nature', 'eco', 'green']):
-            return self.color_schemes['forest_green']
-        elif any(word in title_lower for word in ['технолог', 'IT', 'цифров', 'tech', 'digital']):
-            return self.color_schemes['modern_blue']
-        else:
-            return random.choice(list(self.color_schemes.values()))
+        business_keywords = self.loc.t("business_keywords") + ["business", "corporate", "finance", "company"]
+        if any(word in title_lower for word in business_keywords):
+            return random.choice([self.color_schemes['corporate_navy'], self.color_schemes['steel_slate'], self.color_schemes['midnight_blue']])
+        
+        creative_keywords = self.loc.t("creative_keywords") + ["creative", "design", "art", "artistic"]
+        if any(word in title_lower for word in creative_keywords):
+            return random.choice([self.color_schemes['creative_magenta'], self.color_schemes['lavender_dream'], self.color_schemes['cherry_blossom']])
+        
+        nature_keywords = self.loc.t("nature_keywords") + ["nature", "eco", "green", "forest", "plant"]
+        if any(word in title_lower for word in nature_keywords):
+            return random.choice([self.color_schemes['forest_green'], self.color_schemes['emerald_mint'], self.color_schemes['forest_moss']])
+        
+        tech_keywords = self.loc.t("tech_keywords") + ["IT", "tech", "digital", "computer", "internet"]
+        if any(word in title_lower for word in tech_keywords):
+            return random.choice([self.color_schemes['modern_blue'], self.color_schemes['arctic_cyan'], self.color_schemes['cosmic_violet']])
+        
+        medical_keywords = self.loc.t("medical_keywords") + ["medicine", "health", "treatment", "doctor"]
+        if any(word in title_lower for word in medical_keywords):
+            return random.choice([self.color_schemes['ocean_teal'], self.color_schemes['arctic_cyan'], self.color_schemes['emerald_mint']])
+        
+        education_keywords = self.loc.t("education_keywords") + ["education", "science", "study", "research"]
+        if any(word in title_lower for word in education_keywords):
+            return random.choice([self.color_schemes['royal_indigo'], self.color_schemes['elegant_purple'], self.color_schemes['cosmic_violet']])
+        
+        energy_keywords = self.loc.t("energy_keywords") + ["energy", "industry", "production", "factory"]
+        if any(word in title_lower for word in energy_keywords):
+            return random.choice([self.color_schemes['golden_amber'], self.color_schemes['bronze_gold'], self.color_schemes['warm_orange']])
+        
+        beauty_keywords = self.loc.t("beauty_keywords") + ["love", "beauty", "fashion", "style"]
+        if any(word in title_lower for word in beauty_keywords):
+            return random.choice([self.color_schemes['sunset_pink'], self.color_schemes['cherry_blossom'], self.color_schemes['sunset_coral']])
+        
+        sport_keywords = self.loc.t("sport_keywords") + ["sport", "fitness", "active", "training"]
+        if any(word in title_lower for word in sport_keywords):
+            return random.choice([self.color_schemes['deep_crimson'], self.color_schemes['ruby_wine'], self.color_schemes['warm_orange']])
+        
+        travel_keywords = self.loc.t("travel_keywords") + ["ocean", "sea", "travel", "vacation"]
+        if any(word in title_lower for word in travel_keywords):
+            return random.choice([self.color_schemes['ocean_depth'], self.color_schemes['ocean_teal'], self.color_schemes['arctic_cyan']])
+        
+        return random.choice(list(self.color_schemes.values()))
     
     def add_slide_decoration(self, slide, slide_index: int, total_slides: int, slide_type: str = "content", presentation_title: str = ""):
         if self.current_scheme is None:

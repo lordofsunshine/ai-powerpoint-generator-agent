@@ -3,7 +3,9 @@ import os
 import sys
 from pathlib import Path
 from .translations import TRANSLATIONS
-from .prompts import PROMPTS
+
+DEFAULT_LANGUAGE = "русский"
+from .prompts import PROMPTS, get_current_date
 
 def get_resource_path(relative_path):
     if getattr(sys, 'frozen', False):
@@ -23,10 +25,10 @@ class LocalizationManager:
             if self.config_file.exists():
                 with open(self.config_file, 'r', encoding='utf-8') as f:
                     config = json.load(f)
-                    return config.get('language', 'русский')
+                    return config.get('language', DEFAULT_LANGUAGE)
         except Exception:
             pass
-        return 'русский'
+        return DEFAULT_LANGUAGE
     
     def _save_language(self, language: str):
         try:
@@ -62,8 +64,11 @@ class LocalizationManager:
     def get_prompt(self, prompt_type: str, **kwargs) -> str:
         try:
             prompt_template = PROMPTS[self.current_language][prompt_type]
+            if 'current_date' not in kwargs:
+                kwargs['current_date'] = get_current_date()
             return prompt_template.format(**kwargs)
-        except Exception:
+        except Exception as e:
+            print(f"ERROR in get_prompt: {e}")
             return ""
 
 
